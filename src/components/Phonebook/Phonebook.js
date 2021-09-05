@@ -1,63 +1,66 @@
-import React from "react";
+import { useState} from "react";
 import PropTypes from "prop-types";
 import style from "./Phonebook.module.css";
 
-class PhoneBook extends React.Component {
-  state = {
-    name: "",
-    number: "",
+function PhoneBook({ submitForm }) {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+
+  const handleChangeInput = (e) => {
+    const { value } = e.currentTarget;
+
+    if (e.target.name === "name") {
+      setName(value);
+    }
+    if(e.target.name === "number") {
+      setNumber(value);  
+    }
   };
 
-  handleChangeInput = (e) => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
-  };
-
-  onSubmitForm = (e) => {
+  const onSubmitForm = (e) => {
     e.preventDefault();
 
-    this.props.submitForm(this.state);
-    this.formReset();
+    submitForm({name, number});
+    formReset();
   };
 
-  formReset = () => {
-    this.setState({ name: "", number: "" });
+  const formReset = () => {
+    setName("");
+    setNumber("");
   };
 
-  render() {
-    return (
-      <form className={style.containerForm} onSubmit={this.onSubmitForm}>
-        <h2 className={style.title}>Phonebook</h2>
-        <label>
-          Name
-          <input
-            type="text"
-            name="name"
-            value={this.state.name}
-            onChange={this.handleChangeInput}
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-            required
-          />
-        </label>
-        <label>
-          Number
-          <input
-            type="tel"
-            name="number"
-            value={this.state.number}
-            onChange={this.handleChangeInput}
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-            required
-          />
-        </label>
-        <button className={style.btn} type="submit">
-          Add contact
-        </button>
-      </form>
-    );
-  }
+  return (
+    <form className={style.containerForm} onSubmit={onSubmitForm}>
+      <h2 className={style.title}>Phonebook</h2>
+      <label>
+        Name
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleChangeInput}
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+          required
+        />
+      </label>
+      <label>
+        Number
+        <input
+          type="tel"
+          name="number"
+          value={number}
+          onChange={handleChangeInput}
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
+          required
+        />
+      </label>
+      <button className={style.btn} type="submit">
+        Add contact
+      </button>
+    </form>
+  );
 }
 
 PhoneBook.propTypes = {

@@ -1,7 +1,6 @@
 import React from "react";
 import shortid from "shortid";
 import listContacts from "./data/data.json";
-
 import Section from "./components/Section/Section";
 import PhoneBook from "./components/Phonebook/Phonebook";
 import Contacts from "./components/Contacts/Contacts";
