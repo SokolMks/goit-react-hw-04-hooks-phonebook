@@ -1,71 +1,71 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import shortid from "shortid";
-import listContacts from "./data/data.json";
 import Section from "./components/Section/Section";
 import PhoneBook from "./components/Phonebook/Phonebook";
 import Contacts from "./components/Contacts/Contacts";
 
-class App extends React.Component {
-  state = {
-    contacts: listContacts,
-    filter: "",
-  };
+function AppHook() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState("");
 
-  dataSubmitForm = ({ name, number }) => {
-    const arrayName = this.state.contacts.map((contact) =>
-      contact.name.toLowerCase()
-    );
-    const checkName = arrayName.includes(name.toLowerCase());
+  useEffect(() => {
+    const cont = localStorage.getItem("contacts");
+    const parsContacts = JSON.parse(cont);
 
-    if (checkName) {
-      alert(`${name} is already in contacts`);
+    if(parsContacts) {
+      setContacts(parsContacts);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
+
+  const dataSubmitForm = ({ name, number }) => {
+    const arrName = contacts.map((contact) => contact.name.toLowerCase());
+    const checkName = arrName.includes(name.toLowerCase());
+
+    if(checkName) {
+      alert("This name is already in the list of contacts!");
+      return;
     } else {
       const elContact = {
         id: shortid.generate(),
         name,
-        number,
+        number
       };
 
-      this.setState((prevState) => ({
-        contacts: [elContact, ...prevState.contacts],
-      }));
+      setContacts((prevState) => [elContact, ...prevState]);
     }
   };
 
-  deleteContact = (contactId) => {
-    this.setState((prevState) => ({
-      contacts: prevState.contacts.filter(
-        (contact) => contact.id !== contactId
-      ),
-    }));
+  const changeFilterContacts = (e) => {
+    setFilter(e.currentTarget.value);
   };
 
-  changeFilterContacts = (e) => {
-    this.setState({ filter: e.currentTarget.value });
+  const deleteContact = (contactId) => {
+    setContacts((prevState) =>
+      prevState.filter((contact) => contact.id !== contactId)
+    );
   };
 
-  render() {
-    const { contacts, filter } = this.state;
+  const normalazFilter = filter.toLowerCase();
+  const filterListContacts = contacts.filter((contact) => 
+    contact.name.toLowerCase().includes(normalazFilter)
+  );
 
-    const normalazFilter = filter.toLowerCase();
-    const filterListContacts = contacts.filter((contact) =>
-      contact.name.toLowerCase().includes(normalazFilter)
-    );
+  return (
+    <Section>
+      <PhoneBook submitForm={dataSubmitForm} />
 
-    return (
-      <Section>
-        <PhoneBook submitForm={this.dataSubmitForm} />
-
-        <Contacts
-          mainListContact={contacts}
-          onChangeFilter={this.changeFilterContacts}
-          filterContacts={filter}
-          contactsList={filterListContacts}
-          onDeleteContact={this.deleteContact}
-        />
-      </Section>
-    );
-  }
+      <Contacts
+        mainListContact={contacts}
+        onChangeFilter={changeFilterContacts}
+        filterContacts={filter}
+        contactsList={filterListContacts}
+        onDeleteContact={deleteContact}
+      />
+    </Section>
+  );
 }
-
-export default App;
+export default AppHook;
